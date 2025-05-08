@@ -1,117 +1,119 @@
 import 'package:flutter/material.dart';
 
-class NumerosNat extends StatefulWidget {
+class Numeros extends StatefulWidget{
+  const Numeros({super.key});
+
   @override
-  State<NumerosNat> createState() => _NumerosNatState();
+  State<Numeros> createState() => _NumerosState();
 }
 
-class _NumerosNatState extends State<NumerosNat> {
-  //logica
-  String? respuesta ;
-  //metodos
-  //generara numeros naturales
-  List<int> genNumNaturales(int n) {
-    List<int> numeros = List<int>.generate(n, (_) => (1 + (100 * (new DateTime.now().microsecondsSinceEpoch % 1000) / 1000).toInt()));
-    return numeros;
+class _NumerosState extends State<Numeros>{
+  TextEditingController numBox = TextEditingController();
+  static const int limte = 10;
+  final List<double> listaNumeros = [];
+  int menores15 = 0;
+  int mayores50 = 0;
+  int numEntre = 0;
+  double promedio = 0;
+
+
+  @override
+  void dispose() {
+    numBox.dispose();
+    super.dispose();
   }
 
-  void opciones(String opcion) {
-    //variables
-    List<int> numerosNaturales = [];    
-    numerosNaturales = genNumNaturales(100);
-    String resultado = '';
-
-    switch (opcion) {
-      case 'imprimir':
-        resultado = 'Los números naturales son: ${numerosNaturales.join(', ')}';
-        break;
-      case 'a':
-        // contar numeros < 15
-        int contador = 0;
-        for (int i = 0; i < numerosNaturales.length; i++) {
-          if (numerosNaturales[i] < 15) {
-            contador++;
-          }
-        }
-        resultado = 'Cantidad de números naturales menores a 15: $contador';
-        break;
-      case 'b':
-        //contar numeros > 50
-        int contador = 0;
-        for (int i = 0; i < numerosNaturales.length; i++) {
-          if (numerosNaturales[i] > 50) {
-            contador++;
-          }
-        }
-        resultado = 'Cantidad de números naturales mayores a 50: $contador';
-        break;
-      case 'c':
-        //contar numeros entre 25 y 45
-        int contador = 0;
-        for (int i = 0; i < numerosNaturales.length; i++) {
-          if (numerosNaturales[i] >= 25 && numerosNaturales[i] <= 45) {
-            contador++;
-          }
-        }
-        resultado = 'Cantidad de números naturales entre 25 y 45: $contador';
-        break;
-      case 'd':
-        //promedio 100 numeros naturales
-        int suma = 0;
-        for (int i = 0; i < numerosNaturales.length; i++) {
-          suma += numerosNaturales[i];
-        }
-        double promedio = suma / numerosNaturales.length;
-        resultado = 'El promedio de los 100 números naturales es: $promedio';
-        break;
+  void agregarNumeros(){
+    if (numBox.text.isEmpty) return;
+    final number = double.tryParse(numBox.text);
+    if (number == null){
+      _showError('Ingrese un numero valido');
+      return;
     }
+
     setState(() {
-      respuesta = resultado;
+      listaNumeros.add(number);
+      numBox.clear();
     });
 
+    if (listaNumeros.length >= limte){
+      for (int k=0; k<listaNumeros.length;k++){
+          if (listaNumeros[k] < 15){
+            menores15++;
+          }
+          if(listaNumeros[k]> 50){
+            mayores50++;
+          }
+          if(listaNumeros[k] >=25 && listaNumeros[k] <=45){
+            numEntre++;
+          }
+          promedio = promedio + listaNumeros[k];
+      }
+      promedio = promedio / limte;
+      _showResult();
+    }
   }
-  //Diseño de la pantalla
+
+
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
+  void _showResult() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Resultado'),
+        content: Text('Has ingresado $limte números\nPromedio: $promedio\n'
+            'numeros menores  a 15= $menores15\nEntre 24 y 45= $numEntre\n'
+            'Mayores a 50= $mayores50'),
+
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                listaNumeros.clear();
+                menores15 = 0;
+                promedio = 0;
+                numEntre=0;
+                mayores50 = 0;
+              });
+            },
+            child: Text('Reiniciar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Números Naturales'),
-      ),
-      body: Center(
+      appBar: AppBar(title: Text('Sumar $limte Números')),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () => opciones('imprimir'),
-              child: const Text('Imprimir Números Naturales'),
-            ),
-            ElevatedButton(
-              onPressed: () => opciones('a'),
-              child: const Text('Contar números < 15'),
-            ),
-            ElevatedButton(
-              onPressed: () => opciones('b'),
-              child: const Text('Contar números > 50'),
-            ),
-            ElevatedButton(
-              onPressed: () => opciones('c'),
-              child: const Text('Contar números entre 25 y 45'),
-            ),
-            ElevatedButton(
-              onPressed: () => opciones('d'),
-              child: const Text('Calcular promedio de 100 números naturales'),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed:() { 
-                Navigator.pop(context);
-                }, 
-              child: Text('Regresar'),
+          children: [
+            TextField(
+              controller: numBox,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Ingrese el número ${listaNumeros.length + 1} de $limte',
+                border: OutlineInputBorder(),
               ),
-            if (respuesta != null) ...[
-              const SizedBox(height: 20),
-              Text(respuesta!),
-            ],
+              onSubmitted: (_) => agregarNumeros(),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: agregarNumeros,
+              child: Text('Agregar Número'),
+            ),
+            SizedBox(height: 20),
+
           ],
         ),
       ),

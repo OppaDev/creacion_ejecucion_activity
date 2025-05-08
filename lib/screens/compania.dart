@@ -79,7 +79,7 @@ class _CompaniaState extends State<Compania> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Compania'),
+        title: const Text('Sueldo de Empleado'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

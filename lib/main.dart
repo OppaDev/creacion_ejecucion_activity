@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const MyHomePage(title: 'Creación y ejecución de una Activity'),
         '/compania': (context) => Compania(),
-        '/numerosNat': (context) => NumerosNat(),
+        '/numerosNat': (context) => Numeros(),
         '/numerosAmigos': (context) => NumerosAmigos(),
         '/valorSerie': (context) => ValorSerie(),
         '/verificarPrimo': (context) => VerificarPrimo(),
