@@ -51,8 +51,19 @@ class _CompaniaState extends State<Compania> {
       }
 
       // Validar rango de edad y positiv.
-      if (!esEnteroPositivo(edadEmpleado) || edadEmpleado < 18) {
+      if (!esEnteroPositivo(edadEmpleado) || edadEmpleado < 18 ) {
         errorMessage = 'La edad no es válida';
+        return;
+      }
+      // Validar rango de años
+      if (!esEnteroPositivo(aniosEmpresa) || aniosEmpresa < 0) {
+        errorMessage = 'Los años en la empresa no son válidos';
+        return;
+      }
+
+      //anios empresa no superoror a edad - 18
+      if (aniosEmpresa > edadEmpleado - 18) {
+        errorMessage = 'Los años en la empresa no corresponden a la edad';
         return;
       }
 
